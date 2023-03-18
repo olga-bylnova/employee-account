@@ -1,5 +1,7 @@
 package com.innowise.accounting.model.connection;
 
+import com.innowise.accounting.util.ConnectionManager;
+
 import java.sql.*;
 import java.util.Map;
 import java.util.Properties;
@@ -55,6 +57,7 @@ public class ProxyConnection implements Connection {
     @Override
     public void close() throws SQLException {
         connection.close();
+        ConnectionManager.releaseConnection(this);
     }
 
     @Override
