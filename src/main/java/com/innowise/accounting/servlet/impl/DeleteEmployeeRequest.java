@@ -10,13 +10,15 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+import static com.innowise.accounting.util.ResponseWriter.writeResponse;
+
 public class DeleteEmployeeRequest implements Request {
     private final EmployeeService service = new EmployeeServiceImpl();
     @Override
     public void execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         long id = IdParser.parseId(req.getRequestURI());
         if (service.delete(id)) {
-            resp.setStatus(HttpServletResponse.SC_OK);
+            writeResponse(resp, "User with id " + id + " was deleted", HttpServletResponse.SC_OK);
         }
     }
 }

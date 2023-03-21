@@ -6,7 +6,8 @@ import com.innowise.accounting.dto.EmployeeSaveDto;
 import com.innowise.accounting.service.EmployeeService;
 import com.innowise.accounting.service.EmployeeServiceImpl;
 import com.innowise.accounting.servlet.Request;
-import com.innowise.accounting.servlet.mapper.ObjectMapperFactory;
+import com.innowise.accounting.util.ObjectMapperFactory;
+import com.innowise.accounting.util.ResponseWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,8 +15,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 
+import static com.innowise.accounting.util.ResponseWriter.writeResponse;
+
 public class AddEmployeeRequest implements Request {
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = ObjectMapperFactory.getInstance().getObjectMapper();
     private static final EmployeeService service = new EmployeeServiceImpl();
     @Override
     public void execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -24,11 +27,6 @@ public class AddEmployeeRequest implements Request {
 
         String json = objectMapper.writeValueAsString(readDto);
 
-        resp.setStatus(HttpServletResponse.SC_CREATED);
-        PrintWriter out = resp.getWriter();
-        resp.setContentType("application/json");
-        resp.setCharacterEncoding("UTF-8");
-        out.print(json);
-        out.flush();
+        writeResponse(resp, json, HttpServletResponse.SC_CREATED);
     }
 }
