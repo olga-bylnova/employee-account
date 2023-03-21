@@ -1,6 +1,6 @@
 package com.innowise.accounting.util;
 
-import com.innowise.accounting.model.connection.ProxyConnection;
+import com.innowise.accounting.connection.WrapperConnection;
 import lombok.experimental.UtilityClass;
 
 import java.sql.Connection;
@@ -24,7 +24,7 @@ public final class ConnectionManager {
     private static final String DB_DRIVER = PropertiesUtil.getProperty(DB_DRIVER_KEY);
     private static final Integer DEFAULT_POOL_SIZE = 10;
 
-    private static BlockingQueue<ProxyConnection> pool;
+    private static BlockingQueue<WrapperConnection> pool;
 
     static {
         loadDriver();
@@ -48,15 +48,15 @@ public final class ConnectionManager {
         }
     }
 
-    private static ProxyConnection open() {
+    private static WrapperConnection open() {
         try {
-            return new ProxyConnection(DriverManager.getConnection(DB_URL, DB_USER_NAME, DB_PASSWORD));
+            return new WrapperConnection(DriverManager.getConnection(DB_URL, DB_USER_NAME, DB_PASSWORD));
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public static void releaseConnection(ProxyConnection connection) {
+    public static void releaseConnection(WrapperConnection connection) {
         try {
             pool.put(connection);
         } catch (InterruptedException e) {

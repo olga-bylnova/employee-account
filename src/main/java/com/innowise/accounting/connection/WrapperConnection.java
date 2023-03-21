@@ -7,10 +7,10 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
-public class ProxyConnection implements Connection {
+public class WrapperConnection implements Connection {
     private final Connection connection;
 
-    public ProxyConnection(Connection connection) {
+    public WrapperConnection(Connection connection) {
         this.connection = connection;
     }
 
