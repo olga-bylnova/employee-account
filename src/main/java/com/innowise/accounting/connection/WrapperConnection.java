@@ -1,4 +1,4 @@
-package com.innowise.accounting.model.connection;
+package com.innowise.accounting.connection;
 
 import com.innowise.accounting.util.ConnectionManager;
 

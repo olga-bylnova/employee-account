@@ -1,5 +1,6 @@
 package com.innowise.accounting.service;
 
+import com.innowise.accounting.dto.EmployeeLoginDto;
 import com.innowise.accounting.dto.EmployeeReadDto;
 import com.innowise.accounting.dto.EmployeeSaveDto;
 import com.innowise.accounting.dto.EmployeeUpdateDto;
@@ -13,4 +14,5 @@ public interface EmployeeService {
     boolean delete(Long id);
     boolean update(EmployeeUpdateDto employeeUpdateDto);
     EmployeeReadDto save(EmployeeSaveDto employeeSaveDto);
+    Optional<EmployeeReadDto> login(EmployeeLoginDto loginDto);
 }
