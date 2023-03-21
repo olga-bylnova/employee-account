@@ -1,6 +1,6 @@
 package com.innowise.accounting.dao.impl;
 
-import com.innowise.accounting.dao.Dao;
+import com.innowise.accounting.dao.EmployeeDao;
 import com.innowise.accounting.entity.Employee;
 import com.innowise.accounting.exception.DaoException;
 import com.innowise.accounting.mapper.impl.EmployeeRowMapper;
@@ -18,7 +18,7 @@ import java.util.Optional;
 import static com.innowise.accounting.util.EmployeeTableColumnName.*;
 
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-public class EmployeeDaoImpl implements Dao<Long, Employee> {
+public class EmployeeDaoImpl implements EmployeeDao {
     private static final EmployeeDaoImpl INSTANCE = new EmployeeDaoImpl();
     private static final EmployeeRowMapper rowMapper = EmployeeRowMapper.getInstance();
     private static final String FIND_ALL_SQL = """
@@ -40,6 +40,11 @@ public class EmployeeDaoImpl implements Dao<Long, Employee> {
             SET first_name = ?, last_name = ?, birthday = ?,
             email = ?, password = ?, role = ?
             WHERE id = ?
+            """;
+    private static final String FIND_BY_EMAIL_SQL = """
+            SELECT id, first_name, last_name, birthday, email, password, role 
+            FROM employee
+            WHERE email = ?
             """;
 
     public static EmployeeDaoImpl getInstance() {
@@ -128,6 +133,25 @@ public class EmployeeDaoImpl implements Dao<Long, Employee> {
 
             employee.setId(generatedKeys.getLong(ID));
             return employee;
+        } catch (SQLException e) {
+            throw new DaoException(e);
+        }
+    }
+
+    @Override
+    public Optional<Employee> findByEmail(String email) {
+        try (var connection = ConnectionManager.get();
+             var statement = connection.prepareStatement(FIND_BY_EMAIL_SQL)) {
+            statement.setString(1, email);
+
+            statement.executeQuery();
+
+            ResultSet set = statement.executeQuery();
+            Optional<Employee> optionalEmployee = Optional.empty();
+            while (set.next()) {
+                optionalEmployee = rowMapper.mapRow(set);
+            }
+            return optionalEmployee;
         } catch (SQLException e) {
             throw new DaoException(e);
         }
