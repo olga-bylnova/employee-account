@@ -8,6 +8,7 @@ import com.innowise.accounting.service.EmployeeService;
 import com.innowise.accounting.service.EmployeeServiceImpl;
 import com.innowise.accounting.servlet.Request;
 import com.innowise.accounting.util.AttributeName;
+import com.innowise.accounting.util.ObjectMapperFactory;
 import com.innowise.accounting.util.ResponseWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,7 +22,7 @@ import java.util.Optional;
 import static com.innowise.accounting.util.ResponseWriter.writeResponse;
 
 public class LoginRequest implements Request {
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final ObjectMapper objectMapper = ObjectMapperFactory.getInstance().getObjectMapper();
     private static final EmployeeService service = new EmployeeServiceImpl();
 
     @Override
@@ -33,8 +34,9 @@ public class LoginRequest implements Request {
             if (readDto.isPresent()) {
                 EmployeeReadDto employeeDto = readDto.get();
                 String json = objectMapper.writeValueAsString(employeeDto);
-                HttpSession session = req.getSession(false);
-                session.setAttribute(AttributeName.ROLE, employeeDto.getRole());
+
+                HttpSession session = req.getSession(true);
+                session.setAttribute(AttributeName.ROLE, employeeDto.getRole().name());
                 writeResponse(resp, json, HttpServletResponse.SC_OK);
             }
         } catch (ServiceException e) {
