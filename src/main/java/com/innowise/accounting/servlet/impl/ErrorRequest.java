@@ -13,6 +13,6 @@ public class ErrorRequest implements Request {
     private static final EmployeeService service = new EmployeeServiceImpl();
     @Override
     public void execute(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        service.findAll();
+
     }
 }

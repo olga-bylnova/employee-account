@@ -6,6 +6,8 @@ import com.innowise.accounting.dto.EmployeeReadDto;
 import com.innowise.accounting.dto.EmployeeSaveDto;
 import com.innowise.accounting.dto.EmployeeUpdateDto;
 import com.innowise.accounting.entity.Employee;
+import com.innowise.accounting.exception.DaoException;
+import com.innowise.accounting.exception.ServiceException;
 import com.innowise.accounting.mapper.EmployeeDtoMapper;
 import com.innowise.accounting.util.PasswordEncoder;
 
@@ -23,40 +25,65 @@ public class EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<EmployeeReadDto> findAll() {
-        return employeeDao.findAll()
-                .stream()
-                .map(mapper::employeeToReadDto)
-                .toList();
+    public List<EmployeeReadDto> findAll() throws ServiceException {
+        try {
+            return employeeDao.findAll()
+                    .stream()
+                    .map(mapper::employeeToReadDto)
+                    .toList();
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
     }
 
     @Override
-    public Optional<EmployeeReadDto> findById(Long id) {
-        return employeeDao.findById(id)
-                .map(mapper::employeeToReadDto);
+    public Optional<EmployeeReadDto> findById(Long id) throws ServiceException {
+        try {
+            return employeeDao.findById(id)
+                    .map(mapper::employeeToReadDto);
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
     }
 
     @Override
-    public boolean delete(Long id) {
-        return employeeDao.delete(id);
+    public boolean delete(Long id) throws ServiceException {
+        try {
+            return employeeDao.delete(id);
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
     }
 
     @Override
-    public boolean update(EmployeeUpdateDto employeeUpdateDto) {
-        return employeeDao.update(mapper.employeeUpdateDtoToEmployee(employeeUpdateDto));
+    public boolean update(EmployeeUpdateDto employeeUpdateDto) throws ServiceException {
+        try {
+            return employeeDao.update(mapper.employeeUpdateDtoToEmployee(employeeUpdateDto));
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
     }
 
     @Override
-    public EmployeeReadDto save(EmployeeSaveDto employeeSaveDto) {
-        employeeSaveDto.setPassword(encoder.encode(employeeSaveDto.getPassword()));
-        Employee employee = employeeDao.save(mapper.employeeSaveDtoToEmployee(employeeSaveDto));
-        return mapper.employeeToReadDto(employee);
+    public EmployeeReadDto save(EmployeeSaveDto employeeSaveDto) throws ServiceException {
+        try {
+            employeeSaveDto.setPassword(encoder.encode(employeeSaveDto.getPassword()));
+            Employee employee = employeeDao.save(mapper.employeeSaveDtoToEmployee(employeeSaveDto));
+            return mapper.employeeToReadDto(employee);
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
     }
 
     @Override
-    public Optional<EmployeeReadDto> login(EmployeeLoginDto loginDto) {
+    public Optional<EmployeeReadDto> login(EmployeeLoginDto loginDto) throws ServiceException {
         Optional<EmployeeReadDto> readDto = Optional.empty();
-        Optional<Employee> employeeOptional = employeeDao.findByEmail(loginDto.getEmail());
+        Optional<Employee> employeeOptional;
+        try {
+            employeeOptional = employeeDao.findByEmail(loginDto.getEmail());
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
         if (employeeOptional.isPresent()) {
             Employee employee = employeeOptional.get();
             if (encoder.verify(employee.getPassword(), loginDto.getPassword())) {

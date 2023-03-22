@@ -42,7 +42,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
             WHERE id = ?
             """;
     private static final String FIND_BY_EMAIL_SQL = """
-            SELECT id, first_name, last_name, birthday, email, password, role 
+            SELECT id, first_name, last_name, birthday, email, password, role
             FROM employee
             WHERE email = ?
             """;
@@ -52,7 +52,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
     }
 
     @Override
-    public List<Employee> findAll() {
+    public List<Employee> findAll() throws DaoException {
         try (var connection = ConnectionManager.get();
              var statement = connection.prepareStatement(FIND_ALL_SQL)) {
             ResultSet set = statement.executeQuery();
@@ -69,7 +69,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
     }
 
     @Override
-    public Optional<Employee> findById(Long id) {
+    public Optional<Employee> findById(Long id) throws DaoException {
         try (var connection = ConnectionManager.get();
              var statement = connection.prepareStatement(FIND_BY_ID_SQL)) {
             statement.setObject(1, id);
@@ -86,7 +86,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
     }
 
     @Override
-    public boolean delete(Long id) {
+    public boolean delete(Long id) throws DaoException {
         try (var connection = ConnectionManager.get();
              var statement = connection.prepareStatement(DELETE_BY_ID_SQL)) {
             statement.setObject(1, id);
@@ -98,7 +98,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
     }
 
     @Override
-    public boolean update(Employee employee) {
+    public boolean update(Employee employee) throws DaoException {
         try (var connection = ConnectionManager.get();
              var statement = connection.prepareStatement(UPDATE_SQL)) {
             statement.setString(1, employee.getFirstName());
@@ -116,7 +116,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
     }
 
     @Override
-    public Employee save(Employee employee) {
+    public Employee save(Employee employee) throws DaoException {
         try (var connection = ConnectionManager.get();
              var statement = connection.prepareStatement(SAVE_SQL, Statement.RETURN_GENERATED_KEYS)) {
             statement.setString(1, employee.getFirstName());
@@ -139,7 +139,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
     }
 
     @Override
-    public Optional<Employee> findByEmail(String email) {
+    public Optional<Employee> findByEmail(String email) throws DaoException {
         try (var connection = ConnectionManager.get();
              var statement = connection.prepareStatement(FIND_BY_EMAIL_SQL)) {
             statement.setString(1, email);
