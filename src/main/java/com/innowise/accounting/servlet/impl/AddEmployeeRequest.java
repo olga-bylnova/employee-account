@@ -7,19 +7,16 @@ import com.innowise.accounting.exception.ServiceException;
 import com.innowise.accounting.service.EmployeeService;
 import com.innowise.accounting.service.EmployeeServiceImpl;
 import com.innowise.accounting.servlet.Request;
-import com.innowise.accounting.util.ObjectMapperFactory;
-import com.innowise.accounting.util.ResponseWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import static com.innowise.accounting.util.ResponseWriter.writeResponse;
 
 public class AddEmployeeRequest implements Request {
-    private final ObjectMapper objectMapper = ObjectMapperFactory.getInstance().getObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private static final EmployeeService service = new EmployeeServiceImpl();
 
     @Override
@@ -27,7 +24,9 @@ public class AddEmployeeRequest implements Request {
         try {
             EmployeeSaveDto saveDto = objectMapper.readValue(req.getReader(), EmployeeSaveDto.class);
             EmployeeReadDto readDto = service.save(saveDto);
-
+            //here we return optional?
+            //if it's absent -> return bad request status
+            //TODO
             String json = objectMapper.writeValueAsString(readDto);
             writeResponse(resp, json, HttpServletResponse.SC_CREATED);
         } catch (ServiceException e) {

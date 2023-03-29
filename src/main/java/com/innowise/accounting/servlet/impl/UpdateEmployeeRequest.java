@@ -8,15 +8,18 @@ import com.innowise.accounting.service.EmployeeService;
 import com.innowise.accounting.service.EmployeeServiceImpl;
 import com.innowise.accounting.servlet.Request;
 import com.innowise.accounting.util.IdParser;
-import com.innowise.accounting.util.ObjectMapperFactory;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+import static com.innowise.accounting.util.ResponseMessage.UNABLE_TO_UPDATE_EMPLOYEE;
+import static com.innowise.accounting.util.ResponseMessage.USER_UPDATED;
+import static com.innowise.accounting.util.ResponseWriter.writeResponse;
+
 public class UpdateEmployeeRequest implements Request {
-    private final ObjectMapper objectMapper = ObjectMapperFactory.getInstance().getObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private final EmployeeService service = new EmployeeServiceImpl();
 
     @Override
@@ -27,7 +30,9 @@ public class UpdateEmployeeRequest implements Request {
             updateDto.setId(id);
 
             if (service.update(updateDto)) {
-                resp.setStatus(HttpServletResponse.SC_OK);
+                writeResponse(resp, USER_UPDATED, HttpServletResponse.SC_OK);
+            } else {
+                writeResponse(resp, UNABLE_TO_UPDATE_EMPLOYEE, HttpServletResponse.SC_NOT_FOUND);
             }
         } catch (ServiceException e) {
             throw new RuntimeException(e);

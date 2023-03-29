@@ -1,7 +1,7 @@
 package com.innowise.accounting.filter;
 
 import com.innowise.accounting.servlet.RequestName;
-import com.innowise.accounting.util.ResponseWriter;
+import com.innowise.accounting.util.ResponseMessage;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,6 +12,8 @@ import java.io.IOException;
 
 import static com.innowise.accounting.util.AttributeName.*;
 import static com.innowise.accounting.util.PermissionConfig.*;
+import static com.innowise.accounting.util.ResponseWriter.writeResponse;
+
 @WebFilter("/api/v1/*")
 public class AuthorizationFilter implements Filter {
     public static final String ADMIN = "ADMIN";
@@ -43,7 +45,7 @@ public class AuthorizationFilter implements Filter {
             filterChain.doFilter(servletRequest, servletResponse);
         } else {
             HttpServletResponse resp = (HttpServletResponse) servletResponse;
-            ResponseWriter.writeResponse(resp, "unauthorized", HttpServletResponse.SC_UNAUTHORIZED);
+            writeResponse(resp, ResponseMessage.UNAUTHORIZED, HttpServletResponse.SC_UNAUTHORIZED);
         }
     }
 

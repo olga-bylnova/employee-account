@@ -7,7 +7,6 @@ import com.innowise.accounting.service.EmployeeService;
 import com.innowise.accounting.service.EmployeeServiceImpl;
 import com.innowise.accounting.servlet.Request;
 import com.innowise.accounting.util.IdParser;
-import com.innowise.accounting.util.ObjectMapperFactory;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,10 +14,11 @@ import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
+import static com.innowise.accounting.util.ResponseMessage.EMPLOYEE_NOT_FOUND;
 import static com.innowise.accounting.util.ResponseWriter.writeResponse;
 
 public class GetEmployeeByIdRequest implements Request {
-    private final ObjectMapper objectMapper = ObjectMapperFactory.getInstance().getObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private final EmployeeService service = new EmployeeServiceImpl();
 
     @Override
@@ -31,7 +31,7 @@ public class GetEmployeeByIdRequest implements Request {
                 String json = objectMapper.writeValueAsString(employeeDto.get());
                 writeResponse(resp, json, HttpServletResponse.SC_OK);
             } else {
-                writeResponse(resp, "User with id " + id + " was not found", HttpServletResponse.SC_OK);
+                writeResponse(resp, EMPLOYEE_NOT_FOUND, HttpServletResponse.SC_NOT_FOUND);
             }
         } catch (ServiceException e) {
             throw new RuntimeException(e);

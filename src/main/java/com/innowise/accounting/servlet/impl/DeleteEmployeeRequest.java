@@ -11,6 +11,8 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
+import static com.innowise.accounting.util.ResponseMessage.UNABLE_TO_DELETE_EMPLOYEE;
+import static com.innowise.accounting.util.ResponseMessage.USER_DELETED;
 import static com.innowise.accounting.util.ResponseWriter.writeResponse;
 
 public class DeleteEmployeeRequest implements Request {
@@ -20,7 +22,9 @@ public class DeleteEmployeeRequest implements Request {
         try {
             long id = IdParser.parseId(req.getRequestURI());
             if (service.delete(id)) {
-                writeResponse(resp, "User with id " + id + " was deleted", HttpServletResponse.SC_OK);
+                writeResponse(resp, USER_DELETED, HttpServletResponse.SC_OK);
+            } else {
+                writeResponse(resp, UNABLE_TO_DELETE_EMPLOYEE, HttpServletResponse.SC_NOT_FOUND);
             }
         } catch (ServiceException e) {
             throw new RuntimeException(e);

@@ -8,21 +8,21 @@ import com.innowise.accounting.service.EmployeeService;
 import com.innowise.accounting.service.EmployeeServiceImpl;
 import com.innowise.accounting.servlet.Request;
 import com.innowise.accounting.util.AttributeName;
-import com.innowise.accounting.util.ObjectMapperFactory;
-import com.innowise.accounting.util.ResponseWriter;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.Optional;
 
+import static com.innowise.accounting.util.AttributeName.ROLE;
+import static com.innowise.accounting.util.ResponseMessage.INVALID_CREDENTIALS;
+import static com.innowise.accounting.util.ResponseMessage.USER_LOGGED_IN;
 import static com.innowise.accounting.util.ResponseWriter.writeResponse;
 
 public class LoginRequest implements Request {
-    private final ObjectMapper objectMapper = ObjectMapperFactory.getInstance().getObjectMapper();
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private static final EmployeeService service = new EmployeeServiceImpl();
 
     @Override
@@ -33,11 +33,12 @@ public class LoginRequest implements Request {
 
             if (readDto.isPresent()) {
                 EmployeeReadDto employeeDto = readDto.get();
-                String json = objectMapper.writeValueAsString(employeeDto);
 
-                HttpSession session = req.getSession(true);
-                session.setAttribute(AttributeName.ROLE, employeeDto.getRole().name());
-                writeResponse(resp, json, HttpServletResponse.SC_OK);
+                HttpSession session = req.getSession();
+                session.setAttribute(ROLE, employeeDto.getRole().name());
+                writeResponse(resp, USER_LOGGED_IN, HttpServletResponse.SC_OK);
+            } else {
+                writeResponse(resp, INVALID_CREDENTIALS, HttpServletResponse.SC_UNAUTHORIZED);
             }
         } catch (ServiceException e) {
             throw new RuntimeException(e);
